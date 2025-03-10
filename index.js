@@ -2,7 +2,18 @@ const express = require("express");
 const app = express();
 var morgan = require("morgan");
 
-app.use(morgan("tiny"));
+morgan.token("reqBody", function (req, res) {
+  if (req.method === "POST") {
+    return JSON.stringify(req.body);
+  }
+});
+
+// app.use(morgan("tiny"));
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :reqBody"
+  )
+);
 app.use(express.json());
 
 let data = [
@@ -48,7 +59,6 @@ app.get("/api/persons/:id", (req, res) => {
 
 app.post("/api/persons", (req, res) => {
   const body = req.body;
-  console.log(body);
 
   if (!body.name) {
     return res.status(400).json({
