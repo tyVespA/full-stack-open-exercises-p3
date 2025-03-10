@@ -47,6 +47,12 @@ app.post("/api/persons", (req, res) => {
   const body = req.body;
   console.log(body);
 
+  const person = {
+    id: Math.floor(Math.random() * 10000 + 1).toString(),
+    name: body.name,
+    number: body.number,
+  };
+
   if (!body.name) {
     res.status(400).json({
       error: "name missing",
@@ -59,16 +65,10 @@ app.post("/api/persons", (req, res) => {
     res.status(400).json({
       error: "name must be unique",
     });
+  } else {
+    data = data.concat(person);
+    res.json(person);
   }
-
-  const person = {
-    id: Math.floor(Math.random() * 10000 + 1).toString(),
-    name: body.name,
-    number: body.number,
-  };
-
-  data = data.concat(person);
-  res.json(person);
 });
 
 const PORT = process.env.PORT || 3001;
