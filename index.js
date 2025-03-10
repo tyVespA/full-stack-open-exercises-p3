@@ -47,28 +47,28 @@ app.post("/api/persons", (req, res) => {
   const body = req.body;
   console.log(body);
 
+  if (!body.name) {
+    return res.status(400).json({
+      error: "name missing",
+    });
+  } else if (!body.number) {
+    return res.status(400).json({
+      error: "number missing",
+    });
+  } else if (data.find((person) => person.name === body.name)) {
+    return res.status(400).json({
+      error: "name must be unique",
+    });
+  }
+
   const person = {
     id: Math.floor(Math.random() * 10000 + 1).toString(),
     name: body.name,
     number: body.number,
   };
 
-  if (!body.name) {
-    res.status(400).json({
-      error: "name missing",
-    });
-  } else if (!body.number) {
-    res.status(400).json({
-      error: "number missing",
-    });
-  } else if (data.find((person) => person.name === body.name)) {
-    res.status(400).json({
-      error: "name must be unique",
-    });
-  } else {
-    data = data.concat(person);
-    res.json(person);
-  }
+  data = data.concat(person);
+  res.json(person);
 });
 
 const PORT = process.env.PORT || 3001;
