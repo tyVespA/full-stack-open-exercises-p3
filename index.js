@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 var morgan = require("morgan");
 
 morgan.token("reqBody", function (req, res) {
@@ -15,6 +16,8 @@ app.use(
   )
 );
 app.use(express.json());
+app.use(cors());
+app.use(express.static("dist"));
 
 let data = [
   {
@@ -39,7 +42,7 @@ let data = [
   },
 ];
 
-app.get("/api/persons", (req, res) => {
+app.get("/api/people", (req, res) => {
   res.json(data);
 });
 
@@ -47,7 +50,7 @@ app.get("/info", (req, res) => {
   res.send(`Phonebook has info for ${data.length} people <br> ${new Date()}`);
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/people/:id", (req, res) => {
   const reqId = req.params.id;
   const person = data.find((person) => person.id === reqId);
   if (person) {
@@ -57,7 +60,7 @@ app.get("/api/persons/:id", (req, res) => {
   }
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/people", (req, res) => {
   const body = req.body;
 
   if (!body.name) {
