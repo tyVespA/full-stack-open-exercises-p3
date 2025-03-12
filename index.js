@@ -1,4 +1,4 @@
-// skipped exs: 3.17
+// skipped exs: 3.17, 3.20
 require("dotenv").config();
 const express = require("express");
 const app = express();
@@ -6,7 +6,7 @@ const cors = require("cors");
 var morgan = require("morgan");
 const Person = require("./models/person");
 
-morgan.token("reqBody", function (req, res) {
+morgan.token("reqBody", function (req) {
   if (req.method === "POST") {
     return JSON.stringify(req.body);
   }
@@ -28,7 +28,7 @@ app.get("/api/people", (req, res) => {
   });
 });
 
-app.get("/info", (req, res, next) => {
+app.get("/info", (_req, res, next) => {
   Person.find({})
     .then((people) => {
       res.send(
@@ -75,7 +75,7 @@ app.post("/api/people", (req, res, next) => {
 
 app.delete("/api/people/:id", (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
-    .then((result) => {
+    .then(() => {
       res.status(204).end();
     })
     .catch((error) => next(error));
