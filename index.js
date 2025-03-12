@@ -1,3 +1,4 @@
+// skipped exs: 3.17
 require("dotenv").config();
 const express = require("express");
 const app = express();
@@ -45,7 +46,7 @@ app.get("/api/people/:id", (req, res, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/people", (req, res) => {
+app.post("/api/people", (req, res, next) => {
   const body = req.body;
 
   if (!body.name) {
@@ -57,11 +58,6 @@ app.post("/api/people", (req, res) => {
       error: "number missing",
     });
   }
-  // else if (data.find((person) => person.name === body.name)) {
-  //   return res.status(400).json({
-  //     error: "name must be unique",
-  //   });
-  // }
 
   const person = new Person({
     // id: Math.floor(Math.random() * 10000 + 1).toString(),
@@ -69,9 +65,12 @@ app.post("/api/people", (req, res) => {
     number: body.number,
   });
 
-  person.save().then((savedPerson) => {
-    res.json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      res.json(savedPerson);
+    })
+    .catch((err) => next(err));
 });
 
 app.delete("/api/people/:id", (req, res, next) => {
@@ -94,6 +93,8 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === "CastError") {
     return res.status(400).send({ error: "malformatted id" });
+  } else if (err.name === "ValidationError") {
+    return res.status(400).json({ error: err.message });
   }
   next(err);
 };

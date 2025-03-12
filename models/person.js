@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { required } = require("nodemon/lib/config");
 
 mongoose.set("strictQuery", false);
 
@@ -17,7 +18,7 @@ mongoose
 //
 
 const personSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, minLength: 3, required },
   number: String,
 });
 
