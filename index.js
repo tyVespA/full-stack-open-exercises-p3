@@ -27,18 +27,22 @@ app.get("/api/people", (req, res) => {
   });
 });
 
-app.get("/info", (req, res) => {
-  Person.find({}).then((people) => {
-    res.send(
-      `Phonebook has info for ${people.length} people <br> ${new Date()}`
-    );
-  });
+app.get("/info", (req, res, next) => {
+  Person.find({})
+    .then((people) => {
+      res.send(
+        `Phonebook has info for ${people.length} people <br> ${new Date()}`
+      );
+    })
+    .catch((error) => next(error));
 });
 
-app.get("/api/people/:id", (req, res) => {
-  Person.findById(req.params.id).then((person) => {
-    res.json(person);
-  });
+app.get("/api/people/:id", (req, res, next) => {
+  Person.findById(req.params.id)
+    .then((person) => {
+      res.json(person);
+    })
+    .catch((error) => next(error));
 });
 
 app.post("/api/people", (req, res) => {
@@ -69,6 +73,32 @@ app.post("/api/people", (req, res) => {
     res.json(savedPerson);
   });
 });
+
+app.delete("/api/people/:id", (req, res, next) => {
+  Person.findByIdAndDelete(req.params.id)
+    .then((result) => {
+      res.status(204).end();
+    })
+    .catch((error) => next(error));
+});
+
+// error handling
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.message);
+
+  if (err.name === "CastError") {
+    return res.status(400).send({ error: "malformatted id" });
+  }
+  next(err);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
